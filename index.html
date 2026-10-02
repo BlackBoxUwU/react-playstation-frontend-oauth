@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cybersecurity Portal: LDAP Authentication & Hot Secret Rotation</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- TOP HEADER -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo-area">
+          <div class="shield-icon">🛡️</div>
+          <div>
+            <h1>Security Control & Secret Rotation Portal</h1>
+            <p class="subtitle">OpenLDAP Authentication + 3-Service Dynamic Key Rotation + AES-256 DB Encryption</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="status-badge" id="serviceStatus">
+            <span class="status-dot"></span>
+            <span id="statusText">Connecting...</span>
+          </div>
+          <div id="userProfileBadge" class="user-badge hidden">
+            <span class="user-avatar">👤</span>
+            <div class="user-info">
+              <strong id="userDisplayName">Alice Smith</strong>
+              <span id="userDn">uid=alice,ou=users</span>
+            </div>
+            <button id="btnLogout" class="btn-logout" title="Log Out">Logout</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- VIEW 1: LANDING PAGE (LOGIN) -->
+    <section id="loginView" class="view-section active">
+      <div class="login-wrapper">
+        <div class="login-card">
+          <div class="login-header">
+            <div class="lock-icon">🔐</div>
+            <h2>Enterprise LDAP Authentication</h2>
+            <p>Enter your corporate LDAP directory credentials to access the secure control center.</p>
+          </div>
+
+          <div class="auth-notice">
+            <span class="notice-icon">💡</span>
+            <div>
+              <strong>Quick Demo Credentials:</strong>
+              <div class="quick-credentials">
+                <button type="button" class="btn-fill-creds" data-user="alice" data-pass="alice123">
+                  User: <code>alice</code> / <code>alice123</code>
+                </button>
+                <button type="button" class="btn-fill-creds" data-user="bob" data-pass="bob123">
+                  User: <code>bob</code> / <code>bob123</code>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <form id="loginForm" class="login-form">
+            <div class="form-group">
+              <label for="usernameInput">LDAP Username (UID)</label>
+              <div class="input-icon-wrapper">
+                <span class="input-icon">👤</span>
+                <input type="text" id="usernameInput" placeholder="e.g., alice or bob" required autocomplete="username" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="passwordInput">Password</label>
+              <div class="input-icon-wrapper">
+                <span class="input-icon">🔑</span>
+                <input type="password" id="passwordInput" placeholder="••••••••" required autocomplete="current-password" />
+              </div>
+            </div>
+
+            <div id="loginFeedback" class="feedback-box hidden"></div>
+
+            <button type="submit" id="btnLoginSubmit" class="btn btn-primary btn-block">
+              <span class="btn-icon">⚡</span> Authenticate via LDAP
+            </button>
+          </form>
+
+          <div class="login-footer">
+            <span>🔒 Request proxied via NGINX with injected dynamic <code>x-api-key</code> to LDAP container (:8000).</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: MAIN DASHBOARD (PROTECTED) -->
+    <section id="dashboardView" class="view-section hidden">
+      
+      <!-- Multi-Service Architecture Overview Banner -->
+      <section class="architecture-card">
+        <div class="arch-col">
+          <div class="arch-pill rotate-pill">
+            <span class="pill-icon">🔄</span>
+            <div class="pill-text">
+              <strong>Rotator Daemon</strong>
+              <span>Updates secret every 2m in hot-reload</span>
+            </div>
+          </div>
+        </div>
+        <div class="arch-arrow">➔</div>
+        <div class="arch-col">
+          <div class="arch-pill proxy-pill">
+            <span class="pill-icon">🌐</span>
+            <div class="pill-text">
+              <strong>Frontend NGINX (:8080)</strong>
+              <span>Injects dynamic x-api-key</span>
+            </div>
+          </div>
+        </div>
+        <div class="arch-arrow">➔</div>
+        <div class="arch-col">
+          <div class="arch-pill backend-pill">
+            <span class="pill-icon">⚙️</span>
+            <div class="pill-text">
+              <strong>Backend API (:3000)</strong>
+              <span>AES-256 DB & Protected Data</span>
+            </div>
+          </div>
+        </div>
+        <div class="arch-arrow">+</div>
+        <div class="arch-col">
+          <div class="arch-pill ldap-pill">
+            <span class="pill-icon">🏢</span>
+            <div class="pill-text">
+              <strong>LDAP Service (:8000)</strong>
+              <span>Auth & Directory Validation</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <main class="grid-main">
+        <!-- Left Column: Operations -->
+        <div class="col-operations">
+          
+          <!-- Card 1: 3-Service Rotation Verification -->
+          <section class="card">
+            <div class="card-header">
+              <span class="card-tag">3-Service Verification</span>
+              <h2>1. Secret Rotation Diagnostics</h2>
+            </div>
+            <p class="card-desc">
+              Validate that the exact same rotated <code>API_SECRET</code> is actively protecting both the <strong>Backend API</strong> and the <strong>LDAP Service</strong> without restarting either container.
+            </p>
+
+            <div class="btn-grid">
+              <button id="btnGetBackendStatus" class="btn btn-outline">
+                <span class="btn-icon">🔍</span> Backend Secret (:3000)
+              </button>
+              <button id="btnGetLdapStatus" class="btn btn-outline">
+                <span class="btn-icon">🏢</span> LDAP Secret (:8000)
+              </button>
+              <button id="btnGetData" class="btn btn-primary">
+                <span class="btn-icon">⚡</span> GET /api/data
+              </button>
+              <button id="btnPostData" class="btn btn-secondary">
+                <span class="btn-icon">📤</span> POST /api/data
+              </button>
+            </div>
+          </section>
+
+          <!-- Card 2: Encrypted Database (AES-256) -->
+          <section class="card">
+            <div class="card-header">
+              <span class="card-tag">Static Encryption</span>
+              <h2>2. Encrypted Database (AES-256)</h2>
+            </div>
+            <p class="card-desc">
+              Sensitive items are encrypted with <code>DATABASE_ENCRYPTION_KEY</code> (which remains permanently static and un-rotated) before writing to disk.
+            </p>
+
+            <form id="encryptForm" class="form-encrypt">
+              <div class="input-group">
+                <label for="itemTitle">Record Title / Identifier</label>
+                <input type="text" id="itemTitle" placeholder="e.g., VPN Credential, Secret Key, Token..." required />
+              </div>
+              <div class="input-group">
+                <label for="itemContent">Confidential Payload to Encrypt</label>
+                <textarea id="itemContent" rows="2" placeholder="e.g., Sensitive payload to store encrypted in DB..." required></textarea>
+              </div>
+              <div class="btn-group">
+                <button type="submit" id="btnSaveEncrypted" class="btn btn-accent">
+                  <span class="btn-icon">🔐</span> Encrypt & Store in DB
+                </button>
+                <button type="button" id="btnLoadRecords" class="btn btn-outline">
+                  <span class="btn-icon">📋</span> Retrieve & Decrypt Records
+                </button>
+              </div>
+            </form>
+          </section>
+
+        </div>
+
+        <!-- Right Column: Live Console & Decrypted Records -->
+        <div class="col-console">
+          <!-- Terminal / Response viewer -->
+          <section class="card console-card">
+            <div class="console-header">
+              <div class="console-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="console-title">Live HTTP Interceptor Console</span>
+              <button id="btnClearConsole" class="btn-clear" title="Clear Console">Clear</button>
+            </div>
+            <div class="console-body" id="consoleOutput">
+              <pre><code class="language-json">// Welcome! Authentication successful via LDAP.
+// Click any endpoint button to test real-time requests through NGINX...</code></pre>
+            </div>
+          </section>
+
+          <!-- Stored Records Display -->
+          <section class="card records-card">
+            <div class="card-header">
+              <h2>Decrypted Database Records</h2>
+              <span class="badge" id="recordCount">0 records</span>
+            </div>
+            <div class="records-container" id="recordsList">
+              <p class="empty-state">No records loaded yet. Click "Retrieve & Decrypt Records".</p>
+            </div>
+          </section>
+        </div>
+      </main>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <p>Cybersecurity Lab — LDAP Auth, Zero-Downtime Secret Rotation & AES-256 Encryption Demo</p>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
