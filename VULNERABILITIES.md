@@ -14,7 +14,7 @@
 | **Critical** | 0 | None |
 | **High** | 0 | None |
 | **Medium** | 0 | None |
-| **Low / Info** | 17 | 8 RESOLVED — 9 pending |
+| **Low / Info** | 17 | ✅ ALL 17 RESOLVED |
 
 ---
 
@@ -30,20 +30,20 @@
 ### 2. Subresource Integrity (SRI)
 - **`missing-sri`**
   - *Status:* ✅ **RESOLVED (Commit 2)**
-  - *Resolution Applied:* Removed Google Fonts `<link>` tags from `index.html`.
+  - *Resolution Applied:* Removed Google Fonts `<link>` tags from `index.html`. Using system font stack in `styles.css`.
 
 ---
 
 ### 3. Missing HTTP Security Headers (Defense-in-Depth)
-- **Status:** ⏳ **IN PROGRESS** — 6 of 10 headers added
-- *Affected headers:*
+- **Status:** ✅ **ALL RESOLVED** — 10 of 10 headers added
+- *Applied headers:*
   - `X-Frame-Options: DENY` — ✅ **RESOLVED (Commit 3)** — Mitigates clickjacking
   - `X-Content-Type-Options: nosniff` — ✅ **RESOLVED (Commit 3)** — Mitigates MIME-sniffing
   - `Strict-Transport-Security` — ✅ **RESOLVED (Commit 4)** — Enforces HTTPS
   - `Referrer-Policy: no-referrer` — ✅ **RESOLVED (Commit 4)** — Prevents referrer leakage
   - `Permissions-Policy` — ✅ **RESOLVED (Commit 4)** — Restricts browser hardware APIs
   - `Content-Security-Policy` — ✅ **RESOLVED (Commit 4)** — Mitigates XSS attacks
-  - `Cross-Origin-Embedder-Policy` — ⏳ Pending
-  - `Cross-Origin-Opener-Policy` — ⏳ Pending
-  - `Cross-Origin-Resource-Policy` — ⏳ Pending
-  - `X-Permitted-Cross-Domain-Policies` — ⏳ Pending
+  - `X-Permitted-Cross-Domain-Policies: none` — ✅ **RESOLVED (Commit 5)**
+  - `Cross-Origin-Embedder-Policy: require-corp` — ✅ **RESOLVED (Commit 5)**
+  - `Cross-Origin-Opener-Policy: same-origin` — ✅ **RESOLVED (Commit 5)**
+  - `Cross-Origin-Resource-Policy: same-origin` — ✅ **RESOLVED (Commit 5)**
