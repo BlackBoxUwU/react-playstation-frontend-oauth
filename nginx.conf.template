@@ -2,6 +2,9 @@ server {
     listen 80;
     server_name localhost;
 
+    # Security: Hide NGINX version banner from response headers and error pages
+    server_tokens off;
+
     # Static frontend assets
     root /usr/share/nginx/html;
     index index.html;
