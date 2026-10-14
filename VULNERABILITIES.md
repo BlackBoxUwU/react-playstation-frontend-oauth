@@ -14,7 +14,7 @@
 | **Critical** | 0 | None |
 | **High** | 0 | None |
 | **Medium** | 0 | None |
-| **Low / Info** | 17 | 1 RESOLVED — 16 pending |
+| **Low / Info** | 17 | 2 RESOLVED — 15 pending |
 
 ---
 
@@ -24,21 +24,21 @@
 - **`nginx-version` / `nginx-eol:version` (`nginx/1.25.5`)**
   - *Severity:* Info
   - *Status:* ✅ **RESOLVED (Commit 1)**
-  - *Finding:* Server banner revealed exact NGINX version (`nginx/1.25.5`).
-  - *Resolution Applied:* Added `server_tokens off;` in `nginx.conf.template` to suppress the NGINX version banner.
+  - *Resolution Applied:* Added `server_tokens off;` in `nginx.conf.template`.
 
 ---
 
 ### 2. Subresource Integrity (SRI)
 - **`missing-sri`**
   - *Severity:* Info
-  - *Status:* ⏳ **PENDING**
-  - *Finding:* External font stylesheets fetched without cryptographic integrity hashes (`fonts.googleapis.com`).
+  - *Status:* ✅ **RESOLVED (Commit 2)**
+  - *Finding:* External font stylesheets fetched without cryptographic integrity hashes.
+  - *Resolution Applied:* Removed Google Fonts `<link>` tags from `index.html`. Using system font stack in `styles.css` instead, eliminating the third-party supply chain risk.
 
 ---
 
 ### 3. Missing HTTP Security Headers (Defense-in-Depth)
-- **Status:** ⏳ **PENDING** — 0 of 9 headers added
+- **Status:** ⏳ **PENDING** — 0 of 10 headers added
 - *Affected headers:*
   - `Content-Security-Policy` — ⏳ Pending
   - `Strict-Transport-Security` — ⏳ Pending
