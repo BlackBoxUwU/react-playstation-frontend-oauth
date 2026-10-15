@@ -1,17 +1,12 @@
 [waf-detect:nginxgeneric] [http] [info] http://frontend:80
 [tech-detect:google-font-api] [http] [info] http://frontend:80
 [tech-detect:nginx] [http] [info] http://frontend:80
-[http-missing-security-headers:content-security-policy] [http] [info] http://frontend:80
-[http-missing-security-headers:x-permitted-cross-domain-policies] [http] [info] http://frontend:80
-[http-missing-security-headers:referrer-policy] [http] [info] http://frontend:80
-[http-missing-security-headers:permissions-policy] [http] [info] http://frontend:80
-[http-missing-security-headers:x-frame-options] [http] [info] http://frontend:80
-[http-missing-security-headers:x-content-type-options] [http] [info] http://frontend:80
-[http-missing-security-headers:cross-origin-embedder-policy] [http] [info] http://frontend:80
-[http-missing-security-headers:cross-origin-opener-policy] [http] [info] http://frontend:80
+[form-detection] [http] [info] http://frontend:80
+[missing-sri] [http] [info] http://frontend:80/ ["https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap"]
+[nginx-version] [http] [info] http://frontend:80 ["nginx/1.25.5"]
 [http-missing-security-headers:cross-origin-resource-policy] [http] [info] http://frontend:80
 [http-missing-security-headers:strict-transport-security] [http] [info] http://frontend:80
+[http-missing-security-headers:x-permitted-cross-domain-policies] [http] [info] http://frontend:80
+[http-missing-security-headers:cross-origin-embedder-policy] [http] [info] http://frontend:80
+[http-missing-security-headers:cross-origin-opener-policy] [http] [info] http://frontend:80
 [nginx-eol:version] [http] [info] http://frontend:80 ["1.25.5"]
-[missing-sri] [http] [info] http://frontend:80/ ["https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap"]
-[form-detection] [http] [info] http://frontend:80
-[nginx-version] [http] [info] http://frontend:80 ["nginx/1.25.5"]

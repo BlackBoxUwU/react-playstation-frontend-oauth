@@ -2,74 +2,62 @@
 
 - **Target Component:** Frontend Web UI & NGINX Reverse Proxy (`http://frontend:80`)
 - **Scan Tool:** ProjectDiscovery Nuclei v3.11.1 (Templates v10.5.0)
-- **Scan Date:** 2026-10-14
-- **Assessment Scope:** Dynamic Application Security Testing (DAST) across 11,102 signed templates.
+- **Scan Date:** 2026-10-15
+- **Assessment Scope:** Dynamic Application Security Testing (DAST); 11,102 templates loaded.
 
 ---
 
-## 📊 Summary of Identified Findings
+## Summary of Identified Findings
+
+Nuclei reported 12 findings, all with **Info** severity. These are informational detections and hardening gaps, not evidence of 12 exploitable vulnerabilities.
 
 | Severity | Count | Status |
 |:---|:---:|:---|
-| **Critical** | 0 | None |
-| **High** | 0 | None |
-| **Medium** | 0 | None |
-| **Low / Info** | 17 | 5 mitigated in code (Block 1); rescan pending |
+| **Critical** | 0 | None detected |
+| **High** | 0 | None detected |
+| **Medium** | 0 | None detected |
+| **Low / Info** | 12 | 5 Block-1 headers no longer detected; 5 other missing headers and 7 informational findings remain |
 
 ---
 
-## 🔍 Detailed List of Identified Vulnerabilities and Security Gaps
+## Detailed Findings
 
-### 1. Missing HTTP Security Headers (Defense-in-Depth)
-Nuclei identified that the NGINX web server response lacks essential defense-in-depth security headers:
+### 1. Missing HTTP Security Headers
 
-- **`http-missing-security-headers:content-security-policy`**
-  - *Status:* ✅ Mitigated in `nginx.conf.template` (Block 1; rescan pending).
-  - *Risk:* Without a Content Security Policy (CSP), the web application is susceptible to Cross-Site Scripting (XSS) and unauthorized script injection.
+The scan still reports these five headers as missing:
+
 - **`http-missing-security-headers:strict-transport-security` (HSTS)**
-  - *Status:* Pending HTTPS deployment; HSTS is not enabled while this service is served over HTTP.
-  - *Risk:* Lack of HTTP Strict Transport Security allows potential man-in-the-middle (MitM) and protocol downgrade attacks.
-- **`http-missing-security-headers:x-frame-options`**
-  - *Status:* ✅ Mitigated in `nginx.conf.template` (Block 1; rescan pending).
-  - *Risk:* Missing clickjacking protection allows the page to be rendered inside malicious `<iframe>` tags.
-- **`http-missing-security-headers:x-content-type-options`**
-  - *Status:* ✅ Mitigated in `nginx.conf.template` (Block 1; rescan pending).
-  - *Risk:* Missing `X-Content-Type-Options: nosniff` header allows browsers to MIME-sniff responses away from the declared content-type.
-- **`http-missing-security-headers:referrer-policy`**
-  - *Status:* ✅ Mitigated in `nginx.conf.template` (Block 1; rescan pending).
-  - *Risk:* Missing Referrer-Policy may inadvertently leak sensitive URL parameters to third-party endpoints.
-- **`http-missing-security-headers:permissions-policy`**
-  - *Status:* ✅ Mitigated in `nginx.conf.template` (Block 1; rescan pending).
-  - *Risk:* Missing policy regarding browser feature permissions (camera, microphone, geolocation).
-- **`http-missing-security-headers:cross-origin-embedder-policy` (COEP)**
-  - *Risk:* Cross-origin resources can be loaded without explicit permission.
-- **`http-missing-security-headers:cross-origin-opener-policy` (COOP)**
-  - *Risk:* Process isolation between browsing contexts is not enforced.
+  - **Status:** Pending HTTPS deployment. The frontend is served over HTTP, so HSTS is not enabled.
 - **`http-missing-security-headers:cross-origin-resource-policy` (CORP)**
-  - *Risk:* Missing explicit control over which origins may read the resource.
+- **`http-missing-security-headers:cross-origin-embedder-policy` (COEP)**
+- **`http-missing-security-headers:cross-origin-opener-policy` (COOP)**
 - **`http-missing-security-headers:x-permitted-cross-domain-policies`**
-  - *Risk:* Unrestricted policy for Flash/PDF cross-domain data access.
 
----
+The following headers added in Block 1 are no longer reported by this scan:
+`Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy`.
 
-### 2. Information Disclosure & Technology Fingerprinting
-- **`nginx-version` / `nginx-eol:version` (`nginx/1.25.5`)**
-  - *Finding:* Server banner reveals exact NGINX version (`nginx/1.25.5`).
-  - *Risk:* Assisting attackers in identifying version-specific CVEs and targeting unpatched services.
-- **`tech-detect:nginx` & `waf-detect:nginxgeneric`**
-  - *Finding:* Generic NGINX error/response fingerprinting.
+### 2. Version Disclosure and Technology Detection
 
----
+- **`nginx-version` / `nginx-eol:version`**
+  - **Finding:** The response identifies NGINX as version `1.25.5`.
+  - **Risk:** Version disclosure can help identify potentially relevant vulnerabilities. Review and update the base image; hiding the banner alone does not patch an outdated server.
+- **`tech-detect:nginx`**, **`tech-detect:google-font-api`**, **`waf-detect:nginxgeneric`**, **`form-detection`**
+  - **Finding:** Informational technology and application fingerprinting.
 
-### 3. Subresource Integrity (SRI)
+### 3. External Stylesheet Without SRI
+
 - **`missing-sri`**
-  - *Finding:* Google Fonts stylesheet loaded without `integrity` attribute:
-    `https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap`
-  - *Risk:* If the CDN provider is compromised, altered CSS/scripts can execute without verification.
+  - **Finding:** The Google Fonts stylesheet is loaded without an `integrity` attribute.
+  - **Remediation:** Consider hosting the fonts locally. SRI is generally not practical for a stylesheet whose CDN content may change.
 
 ---
 
-## 🛠️ Next Steps: Granular Remediation Plan (Phase 2)
-1. ✅ **Block 1 complete:** Added `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Content-Security-Policy`, and `Permissions-Policy` in `nginx.conf.template`; rescan pending.
-2. **Commit 2:** Hide NGINX server banner via `server_tokens off;`.
-3. **Commit 3:** Implement Subresource Integrity (SRI) or host fonts locally.
+## Scan Notes
+
+Nuclei also probed ports `5814` and `4040`, which refused connections. These are closed ports, not findings against the frontend's configured HTTP port `80`.
+
+## Remediation Plan
+
+1. **Block 1:** Added CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy`. The current scan no longer reports these five headers.
+2. **Next:** Review and update the NGINX base image; address remaining cross-origin headers as appropriate.
+3. **Later:** Serve over HTTPS before enabling HSTS, and consider hosting fonts locally to remove the SRI finding.
