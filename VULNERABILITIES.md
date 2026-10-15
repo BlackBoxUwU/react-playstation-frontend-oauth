@@ -14,7 +14,7 @@
 | **Critical** | 0 | None |
 | **High** | 0 | None |
 | **Medium** | 0 | None |
-| **Low / Info** | 17 | 3 of 17 resolved (Commit 1) |
+| **Low / Info** | 17 | 5 mitigated in code (Block 1); rescan pending |
 
 ---
 
@@ -24,22 +24,22 @@
 Nuclei identified that the NGINX web server response lacks essential defense-in-depth security headers:
 
 - **`http-missing-security-headers:content-security-policy`**
+  - *Status:* ✅ Mitigated in `nginx.conf.template` (Block 1; rescan pending).
   - *Risk:* Without a Content Security Policy (CSP), the web application is susceptible to Cross-Site Scripting (XSS) and unauthorized script injection.
 - **`http-missing-security-headers:strict-transport-security` (HSTS)**
+  - *Status:* Pending HTTPS deployment; HSTS is not enabled while this service is served over HTTP.
   - *Risk:* Lack of HTTP Strict Transport Security allows potential man-in-the-middle (MitM) and protocol downgrade attacks.
 - **`http-missing-security-headers:x-frame-options`**
-  - *Status:* ✅ **RESOLVED (Commit 1)**
-  - *Resolution Applied:* Added `X-Frame-Options: DENY` in `nginx.conf.template`.
+  - *Status:* ✅ Mitigated in `nginx.conf.template` (Block 1; rescan pending).
   - *Risk:* Missing clickjacking protection allows the page to be rendered inside malicious `<iframe>` tags.
 - **`http-missing-security-headers:x-content-type-options`**
-  - *Status:* ✅ **RESOLVED (Commit 1)**
-  - *Resolution Applied:* Added `X-Content-Type-Options: nosniff` in `nginx.conf.template`.
+  - *Status:* ✅ Mitigated in `nginx.conf.template` (Block 1; rescan pending).
   - *Risk:* Missing `X-Content-Type-Options: nosniff` header allows browsers to MIME-sniff responses away from the declared content-type.
 - **`http-missing-security-headers:referrer-policy`**
-  - *Status:* ✅ **RESOLVED (Commit 1)**
-  - *Resolution Applied:* Added `Referrer-Policy: no-referrer` in `nginx.conf.template`.
+  - *Status:* ✅ Mitigated in `nginx.conf.template` (Block 1; rescan pending).
   - *Risk:* Missing Referrer-Policy may inadvertently leak sensitive URL parameters to third-party endpoints.
 - **`http-missing-security-headers:permissions-policy`**
+  - *Status:* ✅ Mitigated in `nginx.conf.template` (Block 1; rescan pending).
   - *Risk:* Missing policy regarding browser feature permissions (camera, microphone, geolocation).
 - **`http-missing-security-headers:cross-origin-embedder-policy` (COEP)**
   - *Risk:* Cross-origin resources can be loaded without explicit permission.
@@ -70,6 +70,6 @@ Nuclei identified that the NGINX web server response lacks essential defense-in-
 ---
 
 ## 🛠️ Next Steps: Granular Remediation Plan (Phase 2)
-1. **Commit 1:** Implement secure HTTP headers in `nginx.conf.template` (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Content-Security-Policy`, `Permissions-Policy`).
+1. ✅ **Block 1 complete:** Added `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Content-Security-Policy`, and `Permissions-Policy` in `nginx.conf.template`; rescan pending.
 2. **Commit 2:** Hide NGINX server banner via `server_tokens off;`.
 3. **Commit 3:** Implement Subresource Integrity (SRI) or host fonts locally.
