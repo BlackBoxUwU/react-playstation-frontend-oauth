@@ -58,6 +58,6 @@ Nuclei also probed ports `5814` and `4040`, which refused connections. These are
 
 ## Remediation Plan
 
-1. **Block 1:** Added CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy`. The current scan no longer reports these five headers.
-2. **Next:** Review and update the NGINX base image; address remaining cross-origin headers as appropriate.
-3. **Later:** Serve over HTTPS before enabling HSTS, and consider hosting fonts locally to remove the SRI finding.
+1. **Block 1 (LDAP API):** Disable public API docs, add LDAP response security headers, and hide the Uvicorn banner. This addresses 13 of the 35 findings in the 2026-10-15 baseline; LDAP HSTS remains pending HTTPS.
+2. **Block 2 (backend API):** Add the missing API headers and reduce Express fingerprinting.
+3. **Block 3 (frontend and transport):** Review remaining cross-origin headers, update the NGINX image, remove the external font/SRI finding, and configure HTTPS before enabling HSTS.
